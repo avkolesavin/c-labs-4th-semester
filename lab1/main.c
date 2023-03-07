@@ -31,12 +31,10 @@ int max(int a, int b)
 
 int main()
 {
-    int **originMatrix = NULL;
-    int **resultMatrix = NULL;
+    Matrix *originMatrix = NULL;
+    Matrix *resultMatrix = NULL;
     int originMatrixRowsCount = 0;
     int resultMatrixRowsCount = 0;
-    int *originMatrixRowsSizes = NULL;
-    int *resultMatrixRowsSizes = NULL;
 
     do
     {
@@ -44,13 +42,12 @@ int main()
         scanf("%d", &originMatrixRowsCount);
     } while (originMatrixRowsCount <= 0);
 
-    originMatrix = calloc(originMatrixRowsCount, sizeof(int *));
-    originMatrixRowsSizes = calloc(originMatrixRowsCount, sizeof(int));
+    originMatrix = createMatrix(originMatrixRowsCount);
 
     for (int i = 0; i < originMatrixRowsCount; i++)
     {
         int rowSize = 0;
-        int *row = NULL;
+        Vector *vector = NULL;
 
         do
         {
@@ -58,8 +55,7 @@ int main()
             scanf("%d", &rowSize);
         } while (rowSize <= 0);
 
-        row = calloc(rowSize, sizeof(int *));
-        originMatrixRowsSizes[i] = rowSize;
+        vector = createVector(rowSize);
 
         char includeRowToResult = 0;
 
@@ -70,71 +66,65 @@ int main()
             printf("Value for [%d] element: ", j);
             scanf("%d", &value);
 
-            row[j] = value;
+            vector->items[j] = value;
 
             if (value != 0)
                 includeRowToResult = 1;
         }
 
-        originMatrix[i] = row;
+        originMatrix->rows[i] = vector;
 
         if (includeRowToResult)
             resultMatrixRowsCount++;
     }
 
     printf("\nOrigin matrix: ");
-    printMatrix(originMatrix, originMatrixRowsCount, originMatrixRowsSizes);
+    printMatrix(originMatrix);
 
-    resultMatrix = calloc(resultMatrixRowsCount, sizeof(int *));
-    resultMatrixRowsSizes = calloc(resultMatrixRowsCount, sizeof(int));
+    resultMatrix = createMatrix(resultMatrixRowsCount);
     int resultRowIndex = 0;
 
-    for (int i = 0; i < originMatrixRowsCount; i++)
+    for (int i = 0; i < originMatrix->length; i++)
     {
         int positiveElementIndex = -1, negativeElementIndex = -1;
+        Vector *row = originMatrix->rows[i];
 
-        for (int j = 0, rowSize = originMatrixRowsSizes[i]; j < rowSize; j++)
+        for (int j = 0; j < row->length; j++)
         {
 
-            if (positiveElementIndex == -1 && originMatrix[i][j] > 0)
+            if (positiveElementIndex == -1 && row->items[j] > 0)
                 positiveElementIndex = j;
 
-            if (negativeElementIndex == -1 && originMatrix[i][j] < 0)
+            if (negativeElementIndex == -1 && row->items[j] < 0)
                 negativeElementIndex = j;
         }
 
         if (positiveElementIndex == negativeElementIndex)
             continue;
 
-        int *row = NULL;
+        Vector *resultRow = NULL;
 
         if (positiveElementIndex == -1 || negativeElementIndex == -1)
         {
-            row = copyVector(originMatrix[i], originMatrixRowsSizes[i]);
-            resultMatrixRowsSizes[resultRowIndex] = originMatrixRowsSizes[i];
+            resultRow = copyVector(row);
         }
         else
         {
-            row = sliceVector(
-                originMatrix[i],
-                originMatrixRowsSizes[i],
+            resultRow = sliceVector(
+                row,
                 min(positiveElementIndex, negativeElementIndex),
                 max(positiveElementIndex, negativeElementIndex));
-
-            resultMatrixRowsSizes[resultRowIndex] = abs(positiveElementIndex - negativeElementIndex) + 1;
         }
 
-        resultMatrix[resultRowIndex] = row;
+        resultMatrix->rows[resultRowIndex] = resultRow;
         resultRowIndex++;
     }
 
     printf("\nResult matrix: ");
-    printMatrix(resultMatrix, resultMatrixRowsCount, resultMatrixRowsSizes);
+    printMatrix(resultMatrix);
 
-    freeMatrix(originMatrix, originMatrixRowsCount);
-    freeMatrix(resultMatrix, resultMatrixRowsCount);
-    free(originMatrixRowsSizes);
-    free(resultMatrixRowsSizes);
+    freeMatrix(originMatrix);
+    freeMatrix(resultMatrix);
 
     return 0;
 }

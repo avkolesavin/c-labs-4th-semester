@@ -2,21 +2,74 @@
 #include <stdio.h>
 #include "./matrix.h"
 
-int *copyVector(int *sourceVector, int vectorSize)
+Vector *createVector(int length)
 {
-    int *newVector = calloc(vectorSize, sizeof(int));
-
-    for (int i = 0; i < vectorSize; i++)
+    if (length < 0)
     {
-        newVector[i] = sourceVector[i];
+        return NULL;
+    }
+
+    Vector *vector = malloc(sizeof(Vector));
+    vector->items = calloc(length, sizeof(int));
+
+    vector->length = length;
+
+    return vector;
+}
+
+void freeVector(Vector *vector)
+{
+    free(vector->items);
+    free(vector);
+}
+
+Matrix *createMatrix(int length)
+{
+    if (length < 0)
+    {
+        return NULL;
+    }
+
+    Matrix *matrix = malloc(sizeof(Matrix));
+    matrix->rows = calloc(length, sizeof(Vector *));
+
+    matrix->length = length;
+
+    return matrix;
+}
+
+void freeMatrix(Matrix *matrix)
+{
+    if (matrix == NULL)
+        return;
+
+    for (int i = 0; i < matrix->length; i++)
+        freeVector(matrix->rows[i]);
+
+    free(matrix->rows);
+    free(matrix);
+}
+
+Vector *copyVector(Vector *sourceVector)
+{
+    if (sourceVector == NULL)
+    {
+        return NULL;
+    }
+
+    Vector *newVector = createVector(sourceVector->length);
+
+    for (int i = 0; i < sourceVector->length; i++)
+    {
+        newVector->items[i] = sourceVector->items[i];
     }
 
     return newVector;
 }
 
-int *sliceVector(int *sourceVector, int vectorSize, int startIndex, int endIndex)
+Vector *sliceVector(Vector *sourceVector, int startIndex, int endIndex)
 {
-    if (endIndex + 1 > vectorSize)
+    if (endIndex + 1 > sourceVector->length)
         return NULL;
 
     if (startIndex < 0)
@@ -26,44 +79,41 @@ int *sliceVector(int *sourceVector, int vectorSize, int startIndex, int endIndex
         return NULL;
 
     int newVectorSize = endIndex - startIndex + 1;
-    int *newVector = calloc(newVectorSize, sizeof(int));
+    Vector *newVector = createVector(newVectorSize);
 
     for (int i = 0; i < newVectorSize; i++)
-        newVector[i] = sourceVector[i + startIndex];
+        newVector->items[i] = sourceVector->items[startIndex + i];
 
     return newVector;
 }
 
-void printMatrix(int **matrix, int rowsCount, int *rowsSizes)
+void printMatrix(Matrix *matrix)
 {
+    if (matrix == NULL)
+    {
+        printf("NULL\n");
+        return;
+    }
+
     printf("[\n");
 
-    for (int i = 0; i < rowsCount; i++)
+    for (int i = 0; i < matrix->length; i++)
     {
         printf("  [");
+        Vector *row = matrix->rows[i];
 
-        for (int j = 0, rowSize = rowsSizes[i]; j < rowSize; j++)
+        for (int j = 0; j < row->length; j++)
         {
-            if (j == (rowSize - 1))
-                printf("%d", matrix[i][j]);
+            if (j == (row->length - 1))
+                printf("%d", row->items[j]);
             else
-                printf("%d, ", matrix[i][j]);
+                printf("%d, ", row->items[j]);
         }
 
-        if (matrix[i + 1] != '\0')
+        if ((i + 1) < matrix->length)
             printf("],\n");
         else
             printf("]\n");
     }
     printf("]\n");
-}
-
-void freeMatrix(int **matrix, int rowsCount)
-{
-    for (int i = 0; i < rowsCount; i++)
-    {
-        free(matrix[i]);
-    }
-
-    free(matrix);
 }
