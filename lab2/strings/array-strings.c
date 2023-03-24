@@ -50,7 +50,7 @@ void *getFormattedString(void *string)
             }
         }
 
-        if (isSpace(currentChar))
+        if (isSpaceChar(currentChar))
         {
             if (wordLength == WORDS_MAX_LENGTH)
             {
