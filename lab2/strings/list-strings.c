@@ -2,6 +2,7 @@
 #include <stdio.h>
 #include "strings.h"
 #include "common.c"
+#include "list-strings.h"
 
 String *__createString()
 {
