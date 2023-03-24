@@ -1,0 +1,14 @@
+{
+    "files.associations": {
+        "*.tmpl": "html",
+        "strings.h": "c",
+        "cstdio": "c",
+        "cwchar": "c",
+        "fstream": "c",
+        "string": "c",
+        "filesystem": "c",
+        "iosfwd": "c",
+        "stdio.h": "c",
+        "stdlib.h": "c"
+    }
+}
