@@ -1,17 +1,54 @@
-#define DATA_TYPE char *
+// ---- Table ----
 
-#include <stdio.h>
-#include "table/table.h"
+struct TableAdapter;
+
+typedef struct Item
+{
+    int key;
+    char *data;
+} Item;
+
+typedef struct Table
+{
+    Item *items;
+    int length;
+
+    struct TableAdapter *adapter;
+} Table;
+
+typedef struct TableAdapter
+{
+    void (*init)(Table *table);
+} TableAdapter;
+
+Table *newTable(TableAdapter *adapter)
+{
+    Table *table = malloc(sizeof(Table));
+    table->adapter = adapter;
+
+    return table;
+}
+
+void init(Table *table)
+{
+    table->adapter->init(table);
+}
+
+// ---------------
+
+// ---- Memory Adapter ----
+
+void memoryInit(Table *table)
+{
+}
+
+TableAdapter memoryAdapter = {.init = memoryInit};
+
+// -----------------------
 
 int main(int argc, char *argv[])
 {
-    // printf("%s\n", TEST);
+    TableType *table = createTable(tableAdapter);
+    table->init();
     return 0;
 }
-
-/*
-Table *table = newTable(adapter_structure);
-table.init();
-table.print();
-table.close();
-*/
