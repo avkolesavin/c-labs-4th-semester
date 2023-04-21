@@ -1,54 +1,39 @@
-// ---- Table ----
+#include <stdio.h>
 
-struct TableAdapter;
+#include "./table/table.h"
+#include "./table/memory-table/memory-table.h"
+#include "./table/file-table/file-table.h"
 
-typedef struct Item
+typedef char *data_t;
+
+data_t printData(void *data)
 {
-    int key;
-    char *data;
-} Item;
-
-typedef struct Table
-{
-    Item *items;
-    int length;
-
-    struct TableAdapter *adapter;
-} Table;
-
-typedef struct TableAdapter
-{
-    void (*init)(Table *table);
-} TableAdapter;
-
-Table *newTable(TableAdapter *adapter)
-{
-    Table *table = malloc(sizeof(Table));
-    table->adapter = adapter;
-
-    return table;
+    return (data_t)data;
 }
 
-void init(Table *table)
+int main()
 {
-    table->adapter->init(table);
-}
+    Table *memTable = newMemoryTable(10, 1, printData);
+    // Table *fileTable = newFileTable(10, 1, "table");
+    data_t data = NULL;
 
-// ---------------
+    memTable->insert(memTable, 1, 2, "Hello Table");
+    memTable->insert(memTable, 1, 4, "123");
+    memTable->insert(memTable, 1, 6, "Qwerty");
+    memTable->insert(memTable, 1, 16, "Some beautiful data");
+    memTable->insert(memTable, 1, 36, "1q2w3e4r");
 
-// ---- Memory Adapter ----
+    memTable->print(memTable);
 
-void memoryInit(Table *table)
-{
-}
+    memTable->delete (memTable, 1, 16);
+    memTable->update(memTable, 1, 16, "Bla bla");
 
-TableAdapter memoryAdapter = {.init = memoryInit};
+    memTable->print(memTable);
 
-// -----------------------
+    memTable->find(memTable, 1, 36, (void **)&data);
 
-int main(int argc, char *argv[])
-{
-    TableType *table = createTable(tableAdapter);
-    table->init();
+    printf("%s\n", data);
+    printf("The end!\n");
+
     return 0;
 }
