@@ -25,7 +25,7 @@ void printMemoryTable(Table *table)
     }
 }
 
-TABLE_ERRORS memoryTableInsertItem(Table *table, int key1, int key2, void *data)
+TABLE_ERRORS memoryTableInsertItem(Table *table, key_t key1, key_t key2, void *data)
 {
     int index = hash(key1, key2, table->size);
     int startIndex = index;
@@ -53,7 +53,7 @@ TABLE_ERRORS memoryTableInsertItem(Table *table, int key1, int key2, void *data)
     return OK;
 }
 
-TABLE_ERRORS memoryTableUpdateItem(Table *table, int key1, int key2, void *data)
+TABLE_ERRORS memoryTableUpdateItem(Table *table, key_t key1, key_t key2, void *data)
 {
     int index = hash(key1, key2, table->size);
     int startIndex = index;
@@ -68,6 +68,7 @@ TABLE_ERRORS memoryTableUpdateItem(Table *table, int key1, int key2, void *data)
                 return UPDATE_ERROR;
 
             // Не освобождает память перезаписанных данных, алярм!
+            // Подумать в каком месте это контролировать
             table->items[index].data = data;
 
             return OK;
@@ -82,7 +83,7 @@ TABLE_ERRORS memoryTableUpdateItem(Table *table, int key1, int key2, void *data)
     return UPDATE_ERROR;
 }
 
-TABLE_ERRORS memoryTableDeleteItem(Table *table, int key1, int key2)
+TABLE_ERRORS memoryTableDeleteItem(Table *table, key_t key1, key_t key2)
 {
     int index = hash(key1, key2, table->size);
     int startIndex = index;
@@ -107,7 +108,7 @@ TABLE_ERRORS memoryTableDeleteItem(Table *table, int key1, int key2)
     return DELETE_ERROR;
 }
 
-TABLE_ERRORS memoryTableFindItem(Table *table, int key1, int key2, void **data)
+TABLE_ERRORS memoryTableFindItem(Table *table, key_t key1, key_t key2, void **data)
 {
     int index = hash(key1, key2, table->size);
     int startIndex = index;

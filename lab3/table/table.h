@@ -1,9 +1,9 @@
+#include <stdint.h>
+
 #ifndef TABLE_H
 #define TABLE_H
 
-#define ERROR_MESSAGE_BUFFER 255
-
-typedef int keyT;
+typedef uint32_t key_t;
 
 typedef enum TABLE_ERRORS
 {
@@ -18,29 +18,32 @@ typedef enum TABLE_ERRORS
 
 typedef struct Item
 {
-    keyT key1;
-    keyT key2;
+    key_t key1;
+    key_t key2;
     void *data;
 } Item;
 
 typedef struct Table
 {
-    int size;
-    int fullness;
+    uint32_t size;
+    // uint32_t fullness;
     int step;
     Item *items;
 
-    char *(*stringifyData)(void *);
     void (*print)(struct Table *);
+    char *(*stringifyData)(void *);
 
     TABLE_ERRORS(*insert)
-    (struct Table *table, keyT key1, keyT key2, void *data /* , char errorMessage[ERROR_MESSAGE_BUFFER] */);
+    (struct Table *table, uint32_t key1, uint32_t key2, void *data);
+
     TABLE_ERRORS(*update)
-    (struct Table *table, keyT key1, keyT key2, void *newData /* , char errorMessage[ERROR_MESSAGE_BUFFER] */);
+    (struct Table *table, uint32_t key1, uint32_t key2, void *newData);
+
     TABLE_ERRORS(*delete)
-    (struct Table *table, keyT key1, keyT key2 /* , char errorMessage[ERROR_MESSAGE_BUFFER] */);
+    (struct Table *table, uint32_t key1, uint32_t key2);
+
     TABLE_ERRORS(*find)
-    (struct Table *table, keyT key1, keyT key2, void **data /* , char errorMessage[ERROR_MESSAGE_BUFFER] */);
+    (struct Table *table, uint32_t key1, uint32_t key2, void **data);
 } Table;
 
 #endif

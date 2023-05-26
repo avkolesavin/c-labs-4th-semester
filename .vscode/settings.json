@@ -41,6 +41,8 @@
         "string_view": "cpp",
         "unordered_map": "cpp",
         "vector": "cpp",
-        "__locale": "c"
+        "__locale": "c",
+        "table-utils.h": "c",
+        "tree.h": "c"
     }
 }
